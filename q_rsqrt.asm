@@ -27,27 +27,27 @@ main:
 	cvtss2sd xmm1, xmm1
 
 print:
-	sub rsp, 8            ; Padding to ensure 16-byte alignment for printf
+	sub rsp, 8            ; Ensure RSP is 16-byte aligned at call
 
 	mov rdi, msg          ; const char *fmt
-	mov rax, 2            ; Number of XMM register args for printf call (2)
+	mov rax, 2            ; Number of XMM args for variadic printf
 	call printf
 
-	add rsp, 8            ; Remove earlier padding
+	add rsp, 8            ; Restore RSP after call
 
-	xor eax, eax          ; Exit success (return 0)
+	xor eax, eax          ; Return 0 (exit success)
 	ret
 
 q_rsqrt:
     ; x2 = number -> xmm1
-	movss xmm1, xmm0      
+	movss xmm1, xmm0
 
 	; x2 = x2 * 0.5 -> xmm1
 	mov eax, 0x3F000000
 	movd xmm2, eax
 	mulss xmm1, xmm2
 
-	; i = * ( long * ) &y -> eax (long used to be 32 bit lol)
+	; i = * ( long * ) &y -> eax
 	movd eax, xmm0
 
 	; i = 0x5f3759df - (i >> 1) -> edx
